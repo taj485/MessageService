@@ -33,5 +33,19 @@ export class AppComponent implements OnInit {
     );
   }
 
+  login(){
+
+    var url = "https://127.0.0.1:4200/Login"
+    console.log("hello world")
+    this.http.post("/Login",{}).subscribe(
+       (result) => {
+        console.log(result)
+      },
+      (error) => {
+        console.error(error);
+      }
+    )
+  }
+
   title = 'messageservice.client';
 }
