@@ -1,3 +1,7 @@
+using MessageService.Server.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,10 +19,16 @@ builder.Services.AddCors(options =>
                                   .AllowAnyMethod());
 });
 
+builder.Services.AddDbContext<AppIdentityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
 });
+
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<AppIdentityContext>();
 
 builder.Services.AddAuthentication()
     .AddCookie("default", o => o.Cookie.Name = "MyCookie");
@@ -34,6 +44,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapIdentityApi<IdentityUser>();
 
 app.UseCors("AllowSpecificOrigin");
 
